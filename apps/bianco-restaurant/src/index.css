@@ -158,8 +158,13 @@ body { overflow-x: hidden; }
 .quiet-hero-link:focus-visible, .quiet-hero-bag:focus-visible { outline-color: #FFFFFF; }
 .reserve-dialog:focus-visible { outline: none; }
 .loading-screen { background: #530F0C; }
-.loading-hand-frame { position: relative; width: min(82vw, 680px); height: min(74vw, 620px); overflow: hidden; background: #530F0C; }
-.loading-hand-base, .loading-hand-active-image { display: block; width: 100%; height: 100%; object-fit: fill; }
+/* The hand image is 947x864 (ratio 1.096). Size it by width AND by the screen height,
+   so the hand and the progress line below it always fit, on phones (portrait or
+   landscape), laptops and big screens. The base image sets the frame height. */
+.loading-hand-frame { position: relative; width: min(70vw, 440px, calc((100vh - 8rem) * 1.096)); overflow: hidden; background: #530F0C; }
+@supports (height: 100svh) { .loading-hand-frame { width: min(70vw, 440px, calc((100svh - 8rem) * 1.096)); } }
+.loading-hand-base { display: block; width: 100%; height: auto; }
+.loading-hand-active-image { display: block; width: 100%; height: 100%; object-fit: contain; }
 .loading-hand-base { opacity: .5; }
 .loading-hand-active { position: absolute; inset: 0; transition: clip-path .18s linear; }
 .loading-hand-active-image { filter: drop-shadow(0 0 5px rgba(255,255,255,.24)) drop-shadow(0 0 14px rgba(255,255,255,.12)); }

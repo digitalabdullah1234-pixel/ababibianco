@@ -1,6 +1,7 @@
 import { databaseUrl, pool, runMigrations } from "@workspace/db";
 import app from "./app";
 import { logger } from "./lib/logger";
+import { setDatabaseState } from "./lib/database-state";
 import { seedMenuCatalogIfEmpty } from "./lib/menu-catalog";
 import { migrationsDir } from "./lib/paths";
 
@@ -17,8 +18,9 @@ const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 // reachable, so a slow-starting database does not take the website down.
 async function prepareDatabase(): Promise<void> {
   if (!databaseUrl) {
+    setDatabaseState("not_configured");
     logger.error(
-      "DATABASE_URL is not set. The website is online, but the menu, cart and checkout need a PostgreSQL database.",
+      "DATABASE_URL is not set. The website and menu are online, but the cart and checkout need a PostgreSQL database.",
     );
     return;
   }
@@ -30,6 +32,7 @@ async function prepareDatabase(): Promise<void> {
       if (seeded) {
         logger.info("Seeded the Bianco menu catalog.");
       }
+      setDatabaseState("ready");
       logger.info("Database is ready.");
       return;
     } catch (err) {

@@ -39,9 +39,13 @@ Dockerfile             Production image (website + API in one container)
    Do not set `PORT`. The app uses 3000, which matches "Ports Exposes".
 4. **Domain.** Under Domains, add your domain, for example `https://bianco.example.com`.
 5. **Deploy.** In the logs you should see `Server listening` and then `Database is ready.`
+   Open `https://YOUR_DOMAIN/api/healthz`: it must say `"database":"ready"`.
 
 The tables and the starting menu are created automatically on the first start.
 Nothing needs to be run by hand.
+
+The menu (and the dish slider above it) is also built into the server, so it still shows
+while the database is not connected. The cart and checkout do need the database.
 
 **Stripe webhook:** in the Stripe dashboard, point a webhook to
 `https://YOUR_DOMAIN/api/stripe/webhook` with the events
@@ -54,7 +58,7 @@ secret in `STRIPE_WEBHOOK_SECRET`.
 | --- | --- |
 | "Bad Gateway" / "no available server" | Ports Exposes must be `3000`, and `PORT` must not be set to anything else. |
 | Logs show Python / `main.py` | Build Pack must be **Dockerfile**. |
-| Site loads but the menu stays empty | `DATABASE_URL` is missing or wrong. The logs say `Database is not ready yet`. |
+| Menu shows but "Add to order" / the cart fails | The database is not connected. `/api/healthz` shows `"database":"not_configured"` (set `DATABASE_URL`) or `"connecting"` (the URL is wrong or the database is stopped; the logs say `Database is not ready yet`). |
 | Payment button does nothing | Set `VITE_STRIPE_PUBLISHABLE_KEY`, then **redeploy** (it is built into the website). |
 
 Health check URL: `/api/healthz`.

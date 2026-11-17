@@ -1,3 +1,4 @@
+import { GetMenuResponse, type MenuResponse } from "@workspace/api-zod";
 import {
   db,
   menuCategoriesTable,
@@ -499,6 +500,15 @@ const itemRows = catalog.flatMap(({ id: categoryId, items }) =>
     available: true,
   })),
 );
+
+// The same menu, in the shape GET /api/menu returns. Served when the database
+// is not reachable, so customers can still see the menu.
+export const builtInMenu: MenuResponse = GetMenuResponse.parse({
+  categories: categoryRows.map((category) => ({
+    ...category,
+    items: itemRows.filter((item) => item.categoryId === category.id),
+  })),
+});
 
 export async function seedMenuCatalogIfEmpty() {
   const [existingCategories, existingItems] = await Promise.all([
